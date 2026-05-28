@@ -1,10 +1,12 @@
+ENV ADMINER_VERSION=5.4.2
+
+FROM adminer:${ADMINER_VERSION}-fastcgi AS adminer
 FROM php:8.4-fpm-alpine3.23
 
 LABEL org.opencontainers.image.url="https://github.com/misotolar/docker-adminer"
 LABEL org.opencontainers.image.description="Adminer Alpine Linux FPM image"
 LABEL org.opencontainers.image.authors="Michal Sotolar <michal@sotolar.com>"
 
-ENV ADMINER_VERSION=5.4.2
 ARG SHA256=5b761efe7049bf586119256324fd417b49e5bb9243b40d9734fe86655e4402fd
 ADD https://github.com/vrana/adminer/releases/download/v$ADMINER_VERSION/adminer-$ADMINER_VERSION.php /usr/local/adminer/adminer.php
 
@@ -95,9 +97,9 @@ RUN set -ex; \
         /var/tmp/* \
         /tmp/*
 
-COPY --from=adminer:${ADMINER_VERSION}-fastcgi /var/www/html/index.php /usr/local/adminer/index.php
-COPY --from=adminer:${ADMINER_VERSION}-fastcgi /var/www/html/plugin-loader.php /usr/local/adminer/plugin-loader.php
-COPY --from=adminer:${ADMINER_VERSION}-fastcgi /usr/local/bin/entrypoint.sh /usr/local/bin/adminer-entrypoint.sh
+COPY --from=adminer /var/www/html/index.php /usr/local/adminer/index.php
+COPY --from=adminer /var/www/html/plugin-loader.php /usr/local/adminer/plugin-loader.php
+COPY --from=adminer /usr/local/bin/entrypoint.sh /usr/local/bin/adminer-entrypoint.sh
 
 COPY resources/php-fpm.conf /usr/local/etc/php-fpm.conf.docker
 COPY resources/entrypoint.sh /usr/local/bin/entrypoint.sh
