@@ -38,7 +38,7 @@ steps:
     image: kokuwaio/shellcheck
     pull: true
     settings:
-      shell: bash
+      shell: busybox
 
   - name: publish
     image: woodpeckerci/plugin-docker-buildx
