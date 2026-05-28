@@ -38,7 +38,7 @@ RUN set -ex; \
         sqlite-dev \
         unixodbc-dev \
     ; \
-	docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+	docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr; \
     docker-php-ext-install -j "$(nproc)" \
         mysqli \
         pdo_pgsql \
@@ -84,6 +84,7 @@ RUN set -ex; \
         echo 'upload_max_filesize=${PHP_UPLOAD_LIMIT}'; \
         echo 'max_execution_time=${PHP_MAX_EXECUTION_TIME}'; \
     } > $PHP_INI_DIR/conf.d/adminer-defaults.ini; \
+	\
     echo "$SHA256 */usr/local/adminer/adminer.php" | sha256sum -c -; \
     echo "$ADMINER_SHA256 */tmp/adminer.tar.gz" | sha256sum -c -; \
     tar xf /tmp/adminer.tar.gz --strip-components=1 "adminer-$ADMINER_VERSION/designs/" "adminer-$ADMINER_VERSION/plugins/"; \
