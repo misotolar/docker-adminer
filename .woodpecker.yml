@@ -1,0 +1,52 @@
+when:
+
+  - event: [manual, push]
+
+variables:
+  - &repo "misotolar/adminer"
+  - &desc "Adminer Alpine Linux FPM image"
+  - &auth
+    username:
+      from_secret: DOCKER_USERNAME
+    password:
+      from_secret: DOCKER_PASSWORD
+
+clone:
+
+  - name: clone
+    image: alpine/git
+    pull: true
+    commands:
+      - git init --quiet
+      - git remote add origin ${CI_REPO_CLONE_URL}
+      - git fetch --quiet --depth=1 origin "+refs/heads/${CI_COMMIT_BRANCH}:"
+      - git checkout ${CI_COMMIT_SHA} -b ${CI_COMMIT_BRANCH}
+
+steps:
+
+  - name: version
+    image: mwalbeck/determine-docker-tags:0.1
+    pull: true
+    environment:
+      APP_NAME: "ADMINER"
+      VERSION_TYPE: "docker_env"
+      INCLUDE_SUFFIX: "no"
+      INCLUDE_MAJOR: "no"
+      CUSTOM_TAGS: "${CI_COMMIT_SHA:0:8},latest"
+
+  - name: publish
+    image: woodpeckerci/plugin-docker-buildx
+    pull: true
+    settings:
+      repo: *repo
+      platforms: linux/amd64
+      <<: *auth
+
+  - name: update
+    image: misotolar/woodpecker-docker-update
+    pull: true
+    settings:
+      repo: *repo
+      desc: *desc
+      readme: README.md
+      <<: *auth
