@@ -34,6 +34,12 @@ steps:
       INCLUDE_MAJOR: "no"
       CUSTOM_TAGS: "${CI_COMMIT_SHA:0:8},latest"
 
+  - name: shellcheck
+    image: kokuwaio/shellcheck
+    pull: true
+    settings:
+      shell: bash
+
   - name: publish
     image: woodpeckerci/plugin-docker-buildx
     pull: true
